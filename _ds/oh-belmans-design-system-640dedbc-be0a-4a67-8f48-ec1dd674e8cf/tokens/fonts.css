@@ -1,0 +1,13 @@
+/* Webfonts.
+   Display: Plain Black is licensed and not publicly available — substituted with
+   Inter weight 500 + negative tracking per the brand spec's documented fallback.
+   Body/UI: Inter.
+   Swap in real Plain Black .woff2 files here when licensed. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Display face (Plain Black substitute) and text/UI face both resolve to Inter,
+     differentiated by weight + tracking in typography.css. */
+  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-text: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

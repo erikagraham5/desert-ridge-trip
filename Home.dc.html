@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/colors.css">
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/typography.css">
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/radius.css">
+<script src="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/_ds_bundle.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#06192E}
+  body{font-family:Inter,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .app{max-width:460px;margin:0 auto;min-height:100vh;background:url('assets/fireworks-bg.svg') center top / cover fixed no-repeat;background-color:#06192E;position:relative;box-shadow:0 0 60px rgba(0,0,0,.5)}
+  .scroll{padding-bottom:40px}
+  ::-webkit-scrollbar{width:0}
+  @keyframes menuIn{from{opacity:0}to{opacity:1}}
+  @keyframes sheetIn{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div class="app">
+
+  <!-- ===== App bar ===== -->
+  <div style="position:sticky;top:0;z-index:30;background:rgba(7,24,44,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px">
+    <button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:42px;height:42px;border-radius:50%;border:none;background:rgba(239,242,247,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#EFF2F7" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+    </button>
+    <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#EFF2F7">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C77E97" stroke-width="2.2"><path d="M12 21s-7-6.3-7-11a7 7 0 0114 0c0 4.7-7 11-7 11z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
+      JW Desert Ridge
+    </div>
+    <div style="width:42px;height:42px;border-radius:50%;background:rgba(239,242,247,.1);display:flex;align-items:center;justify-content:center">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#EFF2F7" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"></path></svg>
+    </div>
+  </div>
+
+  <div class="scroll">
+
+    <!-- ===== Countdown banner (pre-trip only) ===== -->
+    <sc-if value="{{ showCountdown }}" hint-placeholder-val="{{ true }}">
+      <div style="margin:4px 16px 0;background:#7E3252;border-radius:18px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;color:#fff">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;opacity:.85">Countdown</div>
+          <div style="font-size:16px;font-weight:600;margin-top:3px">{{ countdownText }}</div>
+        </div>
+        <div style="font-size:40px;font-weight:500;letter-spacing:-2px;line-height:1">{{ daysUntil }}</div>
+      </div>
+    </sc-if>
+
+    <!-- ===== Greeting ===== -->
+    <div style="padding:18px 20px 8px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:#AEB7C9">{{ greetingEyebrow }}</div>
+      <div style="font-size:42px;font-weight:500;letter-spacing:-1.6px;color:#EFF2F7;margin-top:3px">{{ greetingDate }}</div>
+    </div>
+
+    <!-- ===== Weather card ===== -->
+    <div style="margin:4px 16px 0;background:linear-gradient(140deg,#1A6494 0%,#11436B 55%,#0C3257 100%);border-radius:22px;padding:18px;color:#fff;box-shadow:0 8px 28px rgba(0,0,0,.32)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6)">Desert Ridge now</div>
+          <sc-if value="{{ wxReady }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:flex-end;gap:9px;margin-top:5px">
+              <span style="font-size:50px;font-weight:500;letter-spacing:-2px;line-height:.95">{{ wxTemp }}°</span>
+              <span style="font-size:13px;color:rgba(255,255,255,.72);padding-bottom:9px">{{ wxLabel }} · H{{ wxHi }} L{{ wxLo }}</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ wxLoading }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:15px;color:rgba(255,255,255,.6);margin-top:10px">Checking the desert sky…</div>
+          </sc-if>
+          <sc-if value="{{ wxErr }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:14px;color:rgba(255,255,255,.6);margin-top:10px">Weather unavailable — it's Phoenix in July, so: hot.</div>
+          </sc-if>
+        </div>
+        <div style="position:relative;width:48px;height:48px;flex-shrink:0">
+          <sc-if value="{{ wxIsSun }}" hint-placeholder-val="{{ true }}"><div style="width:44px;height:44px;border-radius:50%;background:#e8b94a;box-shadow:0 0 0 7px rgba(232,185,74,.18)"></div></sc-if>
+          <sc-if value="{{ wxIsCloud }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;right:0;top:14px;width:42px;height:24px;border-radius:14px;background:#cfd6d6"></div><div style="position:absolute;left:4px;top:4px;width:24px;height:24px;border-radius:50%;background:#e8b94a"></div></sc-if>
+          <sc-if value="{{ wxIsRain }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;right:0;top:8px;width:42px;height:22px;border-radius:13px;background:#cfd6d6"></div><div style="position:absolute;left:10px;bottom:0;width:3px;height:10px;border-radius:2px;background:#9fcfe0"></div><div style="position:absolute;left:22px;bottom:0;width:3px;height:10px;border-radius:2px;background:#9fcfe0"></div></sc-if>
+        </div>
+      </div>
+      <sc-if value="{{ wxReady }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;gap:16px;margin-top:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:5px;scrollbar-width:none">
+          <sc-for list="{{ wxHours }}" as="h" hint-placeholder-count="8">
+            <div style="flex:0 0 auto;min-width:34px;text-align:center">
+              <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,.82)">{{ h.label }}</div>
+              <div style="font-size:15px;font-weight:700;margin-top:7px;color:#7FD2F0">{{ h.temp }}°</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- ===== Day selector ===== -->
+    <div style="display:flex;gap:8px;padding:20px 16px 4px">
+      <sc-for list="{{ pills }}" as="p" hint-placeholder-count="4">
+        <button onClick="{{ p.onClick }}" style="flex:1;padding:9px 0;border:none;border-radius:999px;cursor:pointer;background: {{ p.bg }};color: {{ p.fg }};">
+          <div style="font-size:11px;font-weight:600;opacity:.7;letter-spacing:.5px">{{ p.dow }}</div>
+          <div style="font-size:14px;font-weight:600;margin-top:1px">{{ p.day }}</div>
+        </button>
+      </sc-for>
+    </div>
+
+    <!-- ===== Today's plan ===== -->
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:16px 20px 8px">
+      <div style="font-size:20px;font-weight:600;color:#EFF2F7">{{ planTitle }}</div>
+      <div style="font-size:13px;font-weight:600;color:#C77E97">{{ planCount }}</div>
+    </div>
+
+    <div style="padding:0 16px;display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ events }}" as="ev" hint-placeholder-count="4">
+        <div style="display:flex;gap:12px;align-items:stretch">
+          <div style="width:52px;flex-shrink:0;text-align:right;padding-top:13px;font-size:11px;font-weight:600;color:#AEB7C9;line-height:1.3">{{ ev.time }}</div>
+          <div style="flex:1;border-radius:16px;padding:13px 15px;background: {{ ev.bg }};border: {{ ev.border }};color: {{ ev.fg }};">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+              <span style="font-size:15px;font-weight:600;flex:1;min-width:0">{{ ev.title }}</span>
+              <sc-if value="{{ ev.optional }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:10px;font-weight:600;background: {{ ev.badgeBg }};color: {{ ev.badgeFg }};padding:3px 8px;border-radius:999px;white-space:nowrap">Optional</span>
+              </sc-if>
+              <sc-if value="{{ ev.offResort }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:10px;font-weight:600;background:rgba(239,242,247,.1);color:#AEB7C9;padding:3px 8px;border-radius:999px;white-space:nowrap">Off resort</span>
+              </sc-if>
+            </div>
+            <div style="font-size:12px;margin-top:3px;color: {{ ev.sub }};">{{ ev.loc }}</div>
+            <sc-if value="{{ ev.note }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;margin-top:5px;color: {{ ev.sub }};font-style:italic"><br></div>
+            </sc-if>
+            <sc-if value="{{ ev.menu }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ ev.menu }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;margin-top:9px;color: {{ ev.fg }};text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px">View menu
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+            </sc-if>
+            <sc-if value="{{ ev.book }}" hint-placeholder-val="{{ false }}">
+              <a href="https://desertridge.ipoolside.com/services/hidden-do-not-activate/book_activities" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;margin-top:9px;color: {{ ev.fg }};text-decoration:none;background: {{ ev.badgeBg }};padding:6px 11px;border-radius:999px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>Reserve ahead — book</a>
+            </sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- ===== Resort map ===== -->
+    <div style="padding:22px 16px 8px">
+      <div style="font-size:20px;font-weight:600;color:#EFF2F7;margin-bottom:3px">On the property</div>
+      <div style="font-size:13px;color:#AEB7C9;margin-bottom:12px">Pinch to zoom · drag to pan · same map every day</div>
+
+      <div ref="{{ mapVpRef }}" style="position:relative;width:100%;aspect-ratio:1106/1172;border-radius:20px;overflow:hidden;border:1px solid rgba(174,183,201,.22);background:#0a2740;touch-action:none;cursor:grab">
+        <img ref="{{ mapImgRef }}" src="assets/home-map.png" alt="JW Marriott Desert Ridge resort map with our spots marked" draggable="false" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:fill;transform-origin:0 0;will-change:transform;-webkit-user-select:none;user-select:none;-webkit-user-drag:none">
+        <div style="position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:7px">
+          <button onClick="{{ zoomIn }}" aria-label="Zoom in" style="width:36px;height:36px;border-radius:11px;border:none;background:rgba(10,10,10,.82);color:#fff;font-size:21px;font-weight:500;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">+</button>
+          <button onClick="{{ zoomOut }}" aria-label="Zoom out" style="width:36px;height:36px;border-radius:11px;border:none;background:rgba(10,10,10,.82);color:#fff;font-size:24px;font-weight:500;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">−</button>
+          <button onClick="{{ resetZoom }}" aria-label="Reset zoom" style="width:36px;height:36px;border-radius:11px;border:none;background:rgba(239,242,247,.92);color:#092D4E;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4M21 9V5a2 2 0 00-2-2h-4M3 15v4a2 2 0 002 2h4M21 15v4a2 2 0 01-2 2h-4"></path></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===== Hamburger menu overlay ===== -->
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:50;display:flex;justify-content:center">
+      <div onClick="{{ closeMenu }}" style="position:absolute;inset:0;background:rgba(3,10,20,.55);animation:menuIn .18s ease"></div>
+      <div style="position:relative;width:100%;max-width:460px;background:#071F38;animation:sheetIn .22s ease;display:flex;flex-direction:column;min-height:100vh">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 18px 8px">
+          <div style="font-size:13px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:#AEB7C9">Belczak · O'Hara · Hillman</div>
+          <button onClick="{{ closeMenu }}" aria-label="Close" style="width:42px;height:42px;border-radius:50%;border:none;background:rgba(239,242,247,.1);cursor:pointer;display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EFF2F7" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </div>
+        <div style="padding:14px 22px 0">
+          <div style="font-size:44px;font-weight:500;letter-spacing:-1.8px;color:#EFF2F7;line-height:1.05">Desert Ridge<br>staycation</div>
+          <div style="font-size:14px;color:#AEB7C9;margin-top:10px">July 2–5, 2026 · 3 families</div>
+        </div>
+        <nav style="margin-top:26px;display:flex;flex-direction:column">
+          <sc-for list="{{ menuLinks }}" as="m" hint-placeholder-count="5">
+            <a href="{{ m.href }}" style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;text-decoration:none;border-top:1px solid rgba(174,183,201,.16);color: {{ m.color }};">
+              <span style="font-size:22px;font-weight:600;letter-spacing:-.4px">{{ m.label }}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg>
+            </a>
+          </sc-for>
+        </nav>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { selDay: 0, menuOpen: false, wx: null, wxErr: false, phase: 'before', daysUntil: 0, todayIdx: -1 };
+
+  LOC = {
+    familyEscape: { name: 'Family Escape', x: 264, y: 124, color: '#e8b94a', fg: '#0a0a0a' },
+    copperAlley:  { name: 'Copper Alley',  x: 246, y: 184, color: '#EFF2F7', fg: '#ffffff' },
+    sageCourt:    { name: 'Sage Court',    x: 178, y: 150, color: '#b8a4ed', fg: '#0a0a0a' },
+    pool:         { name: 'Pool area',     x: 116, y: 88,  color: '#ff4d8b', fg: '#ffffff' },
+    kembara:      { name: 'Kembara',       x: 240, y: 158, color: '#1a3a3a', fg: '#ffffff' },
+    tiaCarmen:    { name: 'Tía Carmen',    x: 150, y: 184, color: '#ff6b5a', fg: '#ffffff' },
+    ballroomLawn: { name: 'Ballroom Lawn', x: 60,  y: 226, color: '#a4d4c5', fg: '#0a0a0a' },
+    lobby:        { name: 'Lobby',         x: 168, y: 214, color: '#6a6a6a', fg: '#ffffff' },
+  };
+
+  DATA = [
+    { dow: 'Thursday', short: 'Thu', day: 'Jul 2', long: 'July 2', date: '2026-07-02', events: [
+      { time: 'By 2 PM',  title: 'Check in', loc: 'Front Desk · Lobby', key: 'lobby', accent: 'cream' },
+      { time: '1:00 PM',  title: 'Duck races', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '4:00 PM',  title: 'Battle Putt', loc: 'Family Escape Lawn', key: 'familyEscape', accent: 'lav', optional: true },
+      { time: '6:00 PM',  title: 'Dinner at Tía Carmen', loc: 'Tía Carmen · reservation', key: 'tiaCarmen', accent: 'coral', menu: 'https://www.tiacarmendesertridge.com/our-menus' },
+    ]},
+    { dow: 'Friday', short: 'Fri', day: 'Jul 3', long: 'July 3', date: '2026-07-03', events: [
+      { time: '9:00 AM',  title: 'Koi & turtle feeding', loc: 'Copper Alley', key: 'copperAlley', accent: 'cream', optional: true },
+      { time: '10:00 AM', title: 'Build-a-buddy', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '10–4',     title: 'Pool hang', loc: 'Location TBD, Roy will reserve chairs in the AM', key: 'pool', accent: 'peach' },
+      { time: '1:00 PM',  title: 'Hair tinsel', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true },
+      { time: '3:00 PM',  title: 'Water balloon toss', loc: 'Family Escape Lawn', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '6:00 PM',  title: 'Dinner at Kembara', loc: 'Kembara · reservation', key: 'kembara', accent: 'pink', menu: 'https://www.kembaradesertridge.com/our-menus' },
+      { time: '8:00 PM',  title: 'Funergy dance party + stilt walkers', loc: 'Sage Court', key: 'sageCourt', accent: 'cream', optional: true, note: 'Until bedtime' },
+      { time: '9:00 PM',  title: 'Fireworks', loc: 'Golf / Ballroom Lawn', key: 'ballroomLawn', accent: 'lav' },
+    ]},
+    { dow: 'Saturday', short: 'Sat', day: 'Jul 4', long: 'July 4', date: '2026-07-04', events: [
+      { time: '9:00 AM',  title: 'Koi & turtle feeding', loc: 'Copper Alley', key: 'copperAlley', accent: 'cream', optional: true },
+      { time: '10–6',     title: 'Cabana hang', loc: 'Our Cabana #1300', key: 'pool', accent: 'peach' },
+      { time: '1:00 PM',  title: 'Duck races', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true },
+      { time: '2:00 PM',  title: 'Tie dye', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reservation required', book: true },
+      { time: '4:00 PM',  title: 'Bubble bash', loc: 'Sage Court', key: 'sageCourt', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '6:00 PM',  title: 'Eat by pool or order in', loc: 'Our Cabana #1300', key: 'pool', accent: 'peach' },
+    ]},
+    { dow: 'Sunday', short: 'Sun', day: 'Jul 5', long: 'July 5', date: '2026-07-05', events: [
+      { time: '9:00 AM',  title: 'Koi & turtle feeding', loc: 'Copper Alley', key: 'copperAlley', accent: 'cream', optional: true },
+      { time: 'All day',  title: 'Pool until we leave', loc: 'Pool area', key: 'pool', accent: 'peach' },
+    ]},
+  ];
+
+  ACCENTS = {
+    cream: { bg: '#0C2E4F', border: '1px solid rgba(174,183,201,.18)', fg: '#EFF2F7', sub: '#AEB7C9', badgeBg: 'rgba(239,242,247,.12)', badgeFg: '#AEB7C9' },
+    peach: { bg: '#1A739D', border: 'none', fg: '#ffffff', sub: 'rgba(255,255,255,.82)', badgeBg: 'rgba(255,255,255,.22)', badgeFg: '#ffffff' },
+    pink:  { bg: '#7E3252', border: 'none', fg: '#ffffff', sub: 'rgba(255,255,255,.82)', badgeBg: 'rgba(255,255,255,.2)', badgeFg: '#ffffff' },
+    coral: { bg: '#7E3252', border: 'none', fg: '#ffffff', sub: 'rgba(255,255,255,.86)', badgeBg: 'rgba(255,255,255,.2)', badgeFg: '#ffffff' },
+    lav:   { bg: '#83789D', border: 'none', fg: '#10243B', sub: 'rgba(16,36,59,.66)', badgeBg: 'rgba(255,255,255,.42)', badgeFg: '#10243B' },
+  };
+
+  mapVpRef = React.createRef();
+  mapImgRef = React.createRef();
+  tf = { s: 1, x: 0, y: 0 };
+
+  applyTf() {
+    const img = this.mapImgRef.current;
+    if (img) img.style.transform = 'translate(' + this.tf.x + 'px,' + this.tf.y + 'px) scale(' + this.tf.s + ')';
+  }
+  clampTf() {
+    const vp = this.mapVpRef.current; if (!vp) return;
+    const w = vp.clientWidth, h = vp.clientHeight;
+    this.tf.s = Math.max(1, Math.min(5, this.tf.s));
+    const minX = w - w * this.tf.s, minY = h - h * this.tf.s;
+    this.tf.x = Math.max(minX, Math.min(0, this.tf.x));
+    this.tf.y = Math.max(minY, Math.min(0, this.tf.y));
+  }
+  zoomAt(factor, lx, ly) {
+    const ix = (lx - this.tf.x) / this.tf.s, iy = (ly - this.tf.y) / this.tf.s;
+    this.tf.s *= factor;
+    this.tf.s = Math.max(1, Math.min(5, this.tf.s));
+    this.tf.x = lx - ix * this.tf.s;
+    this.tf.y = ly - iy * this.tf.s;
+    this.clampTf(); this.applyTf();
+  }
+  setupMapZoom() {
+    const vp = this.mapVpRef.current; if (!vp) return;
+    let pts = new Map(), pinch = null, pan = null;
+    const local = e => { const r = vp.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    vp.addEventListener('pointerdown', e => {
+      vp.setPointerCapture(e.pointerId);
+      pts.set(e.pointerId, local(e));
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+        pan = null;
+      } else if (pts.size === 1 && this.tf.s > 1) {
+        pan = local(e); vp.style.cursor = 'grabbing';
+      }
+    });
+    vp.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, local(e));
+      if (pts.size === 2 && pinch) {
+        const [a, b] = [...pts.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        if (pinch.d > 0) this.zoomAt(d / pinch.d, mx, my);
+        pinch.d = d; pinch.mx = mx; pinch.my = my;
+      } else if (pts.size === 1 && pan && this.tf.s > 1) {
+        const p = local(e);
+        this.tf.x += p.x - pan.x; this.tf.y += p.y - pan.y;
+        pan = p; this.clampTf(); this.applyTf();
+      }
+    });
+    const up = e => {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      if (pts.size === 0) { pan = null; vp.style.cursor = 'grab'; }
+    };
+    vp.addEventListener('pointerup', up);
+    vp.addEventListener('pointercancel', up);
+    vp.addEventListener('wheel', e => {
+      e.preventDefault();
+      const p = local(e);
+      this.zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, p.x, p.y);
+    }, { passive: false });
+    vp.addEventListener('dblclick', e => {
+      const p = local(e);
+      if (this.tf.s > 1.05) { this.tf = { s: 1, x: 0, y: 0 }; this.clampTf(); this.applyTf(); }
+      else this.zoomAt(2.2, p.x, p.y);
+    });
+  }
+
+  componentDidMount() {
+    this.setupMapZoom();
+    const start = new Date(2026, 6, 2);
+    const end = new Date(2026, 6, 5);
+    const now = new Date();
+    const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let phase = 'before', sel = 0, todayIdx = -1;
+    if (todayMid < start) { phase = 'before'; sel = 0; }
+    else if (todayMid > end) { phase = 'after'; sel = this.DATA.length - 1; }
+    else { phase = 'during'; sel = Math.round((todayMid - start) / 86400000); todayIdx = sel; }
+    const daysUntil = Math.max(0, Math.ceil((start - todayMid) / 86400000));
+    this.setState({ phase, selDay: sel, daysUntil, todayIdx });
+    this.fetchWeather();
+  }
+
+  wxMeta(code) {
+    if (code === 0) return { label: 'Clear', kind: 'sun' };
+    if (code === 1 || code === 2) return { label: 'Partly cloudy', kind: 'cloud' };
+    if (code === 3) return { label: 'Cloudy', kind: 'cloud' };
+    if (code === 45 || code === 48) return { label: 'Hazy', kind: 'cloud' };
+    if (code >= 51 && code <= 67) return { label: 'Rainy', kind: 'rain' };
+    if (code >= 80 && code <= 82) return { label: 'Showers', kind: 'rain' };
+    if (code >= 95) return { label: 'Storms', kind: 'rain' };
+    return { label: 'Sunny', kind: 'sun' };
+  }
+
+  async fetchWeather() {
+    try {
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=33.677&longitude=-111.976&current=temperature_2m,weather_code&hourly=temperature_2m&temperature_unit=fahrenheit&timezone=America%2FPhoenix&forecast_days=2';
+      const r = await fetch(url);
+      const j = await r.json();
+      const cur = j.current, H = j.hourly;
+      let idx = H.time.indexOf(cur.time);
+      if (idx < 0) idx = 0;
+      const hours = [];
+      for (let k = 0; k < 14; k++) {
+        const i = idx + k;
+        if (i < H.time.length) {
+          const dt = new Date(H.time[i]);
+          let h = dt.getHours(); const ap = h >= 12 ? 'p' : 'a'; let hh = h % 12; if (hh === 0) hh = 12;
+          hours.push({ label: hh + ap, temp: Math.round(H.temperature_2m[i]) });
+        }
+      }
+      let hi = -99, lo = 199;
+      for (let i = 0; i < 24 && i < H.temperature_2m.length; i++) { hi = Math.max(hi, H.temperature_2m[i]); lo = Math.min(lo, H.temperature_2m[i]); }
+      const meta = this.wxMeta(cur.weather_code);
+      this.setState({ wx: { temp: Math.round(cur.temperature_2m), label: meta.label, kind: meta.kind, hi: Math.round(hi), lo: Math.round(lo), hours } });
+    } catch (e) { this.setState({ wxErr: true }); }
+  }
+
+  renderVals() {
+    const { selDay, menuOpen, wx, wxErr, phase, daysUntil, todayIdx } = this.state;
+    const dObj = this.DATA[selDay] || this.DATA[0];
+
+    const pills = this.DATA.map((d, i) => ({
+      dow: d.short, day: d.day, idx: i,
+      bg: i === selDay ? '#EFF2F7' : 'rgba(239,242,247,.1)',
+      fg: i === selDay ? '#092D4E' : '#AEB7C9',
+      onClick: () => this.setState({ selDay: i }),
+    }));
+
+    const events = dObj.events.map(e => {
+      const a = this.ACCENTS[e.accent] || this.ACCENTS.cream;
+      return { time: e.time, title: e.title, loc: e.loc, optional: !!e.optional, offResort: !!e.offResort,
+        note: e.note || null, menu: e.menu || null, book: !!e.book,
+        bg: a.bg, border: a.border, fg: a.fg, sub: a.sub, badgeBg: a.badgeBg, badgeFg: a.badgeFg };
+    });
+
+    // group events by location for pins + legend
+    const order = [], byKey = {};
+    dObj.events.forEach(e => {
+      if (!e.key) return;
+      if (!byKey[e.key]) { byKey[e.key] = []; order.push(e.key); }
+      byKey[e.key].push({ title: e.title, time: e.time });
+    });
+    const pins = order.map(k => {
+      const L = this.LOC[k];
+      return { name: L.name, color: L.color, fg: L.fg,
+        left: (L.x / 400 * 100).toFixed(1) + '%', top: (L.y / 300 * 100).toFixed(1) + '%',
+        acts: byKey[k] };
+    });
+
+    let greetingEyebrow = dObj.dow + ' · Day ' + (selDay + 1) + ' of 4';
+    if (phase === 'before' && selDay === 0) greetingEyebrow = 'First up · ' + dObj.dow;
+    if (phase === 'after' && selDay === this.DATA.length - 1) greetingEyebrow = 'That was a trip · ' + dObj.dow;
+
+    const planTitle = todayIdx === selDay ? "Today's plan" : dObj.dow + "'s plan";
+    const planCount = dObj.events.length + (dObj.events.length === 1 ? ' event' : ' events');
+
+    const wd = daysUntil === 1 ? 'day' : 'days';
+    const countdownText = daysUntil <= 0 ? "It's go time" : (daysUntil + ' ' + wd + ' to Desert Ridge');
+
+    const menuLinks = [
+      { label: 'Home', href: 'Home.dc.html', color: '#62718A' },
+      { label: 'All Daily Activities', href: 'All%20Daily%20Activities.dc.html', color: '#EFF2F7' },
+      { label: 'Resort Maps & Info', href: 'Resort%20Maps.dc.html', color: '#EFF2F7' },
+      { label: 'Links', href: 'Links.dc.html', color: '#EFF2F7' },
+    ];
+
+    return {
+      menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      showCountdown: phase === 'before',
+      daysUntil, countdownText,
+      greetingEyebrow, greetingDate: dObj.long,
+      pills, planTitle, planCount, events, pins,
+      mapVpRef: this.mapVpRef, mapImgRef: this.mapImgRef,
+      zoomIn: () => { const vp = this.mapVpRef.current; this.zoomAt(1.4, vp.clientWidth / 2, vp.clientHeight / 2); },
+      zoomOut: () => { const vp = this.mapVpRef.current; this.zoomAt(1 / 1.4, vp.clientWidth / 2, vp.clientHeight / 2); },
+      resetZoom: () => { this.tf = { s: 1, x: 0, y: 0 }; this.clampTf(); this.applyTf(); },
+      menuLinks,
+      // weather
+      wxReady: !!wx, wxLoading: !wx && !wxErr, wxErr,
+      wxTemp: wx ? wx.temp : 0, wxLabel: wx ? wx.label : '', wxHi: wx ? wx.hi : 0, wxLo: wx ? wx.lo : 0,
+      wxHours: wx ? wx.hours : [],
+      wxIsSun: wx ? wx.kind === 'sun' : false,
+      wxIsCloud: wx ? wx.kind === 'cloud' : false,
+      wxIsRain: wx ? wx.kind === 'rain' : false,
+    };
+  }
+}
+</script>
+</body>
+</html>

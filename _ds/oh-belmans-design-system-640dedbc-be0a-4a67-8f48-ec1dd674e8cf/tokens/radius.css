@@ -1,0 +1,10 @@
+/* Border radius — generous, matching the rounded display character. */
+:root {
+  --radius-xs: 6px;    /* small badges, dropdown items */
+  --radius-sm: 8px;    /* small buttons */
+  --radius-md: 12px;   /* CTA buttons, text inputs */
+  --radius-lg: 16px;   /* content cards, testimonials, pricing */
+  --radius-xl: 24px;   /* saturated feature cards */
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+}

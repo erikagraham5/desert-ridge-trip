@@ -1,0 +1,8 @@
+/* Elevation — the system avoids heavy shadows. Depth comes from saturated color
+   contrast against the cream canvas. These are the rare, low-alpha exceptions. */
+:root {
+  --shadow-none: none;
+  --shadow-hover: 0 8px 24px rgba(10, 10, 10, 0.08);
+  --shadow-soft: 0 2px 8px rgba(10, 10, 10, 0.05);
+  --border-hairline: 1px solid var(--hairline);
+}

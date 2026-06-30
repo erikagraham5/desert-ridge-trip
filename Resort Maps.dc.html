@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/colors.css">
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/typography.css">
+<link rel="stylesheet" href="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/tokens/radius.css">
+<script src="_ds/oh-belmans-design-system-640dedbc-be0a-4a67-8f48-ec1dd674e8cf/_ds_bundle.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#06192E}
+  body{font-family:Inter,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .app{max-width:460px;margin:0 auto;min-height:100vh;background:url('assets/fireworks-bg.svg') center top / cover fixed no-repeat;background-color:#06192E;position:relative;box-shadow:0 0 60px rgba(0,0,0,.5)}
+  ::-webkit-scrollbar{width:0}
+  @keyframes menuIn{from{opacity:0}to{opacity:1}}
+  @keyframes sheetIn{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div class="app">
+
+  <!-- App bar -->
+  <div style="position:sticky;top:0;z-index:30;background:rgba(7,24,44,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px">
+    <button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:42px;height:42px;border-radius:50%;border:none;background:rgba(239,242,247,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#EFF2F7" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+    </button>
+    <div style="font-size:14px;font-weight:600;color:#EFF2F7">Maps &amp; info</div>
+    <a href="Home.dc.html" aria-label="Home" style="width:42px;height:42px;border-radius:50%;background:rgba(239,242,247,.1);display:flex;align-items:center;justify-content:center;text-decoration:none">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#EFF2F7" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"></path></svg>
+    </a>
+  </div>
+
+  <div style="padding-bottom:48px">
+
+    <div style="padding:14px 20px 6px">
+      <div style="font-size:13px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:#AEB7C9">JW Marriott · Phoenix Desert Ridge</div>
+      <div style="font-size:40px;font-weight:500;letter-spacing:-1.5px;color:#EFF2F7;margin-top:4px">Find your way</div>
+      <div style="font-size:14px;color:#C3CAD6;margin-top:8px;line-height:1.5">Switch between our spots and the dining map below, or pinch to zoom in. Tap Cabana to jump to our basecamp details — or open the full official PDFs.</div>
+    </div>
+
+    <!-- map view toggle -->
+    <div style="display:flex;gap:8px;padding:14px 16px 6px">
+      <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="3">
+        <button onClick="{{ t.onClick }}" style="flex:1;padding:11px 8px;border-radius:13px;border: {{ t.border }};background: {{ t.bg }};color: {{ t.fg }};font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px">{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <!-- map image (pinch to zoom) -->
+    <div style="padding:8px 16px 0">
+      <div style="font-size:13px;color:#AEB7C9;margin-bottom:10px">Pinch to zoom &middot; drag to pan &middot; double-tap to reset</div>
+      <div ref="{{ mapVpRef }}" style="position:relative;width:100%;aspect-ratio:1106/1172;border-radius:20px;overflow:hidden;border:1px solid rgba(174,183,201,.22);background:#0a2740;touch-action:none;cursor:grab">
+        <img ref="{{ mapImgRef }}" src="{{ mapSrc }}" alt="JW Marriott Desert Ridge resort map" draggable="false" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:fill;transform-origin:0 0;will-change:transform;-webkit-user-select:none;user-select:none;-webkit-user-drag:none" />
+        <div style="position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:7px">
+          <button onClick="{{ zoomIn }}" aria-label="Zoom in" style="width:36px;height:36px;border-radius:11px;border:none;background:rgba(7,24,44,.85);color:#fff;font-size:21px;font-weight:500;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">+</button>
+          <button onClick="{{ zoomOut }}" aria-label="Zoom out" style="width:36px;height:36px;border-radius:11px;border:none;background:rgba(7,24,44,.85);color:#fff;font-size:24px;font-weight:500;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">&minus;</button>
+          <button onClick="{{ resetZoom }}" aria-label="Reset zoom" style="width:36px;height:36px;border-radius:11px;border:none;background:rgba(239,242,247,.92);color:#092D4E;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 012-2h4M21 9V5a2 2 0 00-2-2h-4M3 15v4a2 2 0 002 2h4M21 15v4a2 2 0 01-2 2h-4"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF buttons -->
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px 16px 4px">
+      <a href="https://ipoolside-media.s3.amazonaws.com/site/desertridge/images/attachment/JWDR_Resort_Map_Digital.pdf" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;background:#135378;color:#fff;text-decoration:none;border-radius:14px;padding:15px 18px">
+        <span style="font-size:15px;font-weight:600">Open official resort map</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.7)">PDF<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></span>
+      </a>
+      <a href="https://ipoolside-media.s3.amazonaws.com/site/desertridge/images/attachment/May_25-Aug_9_2026_Activity_Guide_Digital.pdf" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;background:#0C2E4F;border:1px solid rgba(174,183,201,.22);color:#EFF2F7;text-decoration:none;border-radius:14px;padding:15px 18px">
+        <span style="font-size:15px;font-weight:600">Summer activity guide</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7E8BA0">PDF<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></span>
+      </a>
+    </div>
+
+    <!-- hours of operation -->
+    <div style="padding:24px 20px 8px">
+      <div style="font-size:20px;font-weight:600;color:#EFF2F7;margin-bottom:4px">Hours of operation</div>
+      <div style="font-size:13px;color:#AEB7C9">Food, drink &amp; fun — {{ todayLabel }}</div>
+    </div>
+    <div style="padding:0 16px;display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ hours }}" as="g" hint-placeholder-count="4">
+        <div style="background:#0C2E4F;border:1px solid rgba(174,183,201,.16);border-radius:18px;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background: {{ g.color }};color: {{ g.fg }}">
+            <div style="width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center">{{ g.icon }}</div>
+            <span style="font-size:17px;font-weight:600;letter-spacing:-.3px">{{ g.title }}</span>
+          </div>
+          <div style="padding:4px 16px 8px">
+            <sc-for list="{{ g.venues }}" as="v" hint-placeholder-count="2">
+              <div style="padding:13px 0;border-top:1px solid rgba(174,183,201,.14)">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14px;font-weight:600;color:#EFF2F7">{{ v.name }}</div>
+                    <sc-if value="{{ v.sub }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:12px;color:#7E8BA0;margin-top:1px">{{ v.sub }}</div>
+                    </sc-if>
+                  </div>
+                  <span style="flex-shrink:0;font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap;background: {{ v.statusBg }};color: {{ v.statusFg }}">{{ v.status }}</span>
+                </div>
+                <!-- timeline bar 5a → 12a -->
+                <div style="position:relative;height:8px;border-radius:999px;background:rgba(255,255,255,.12);margin:11px 0 7px;overflow:hidden">
+                  <sc-if value="{{ v.hasToday }}" hint-placeholder-val="{{ true }}">
+                    <div style="position:absolute;top:0;bottom:0;left: {{ v.barLeft }};width: {{ v.barWidth }};border-radius:999px;background: {{ g.color }}"></div>
+                  </sc-if>
+                  <sc-if value="{{ v.nowShown }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;top:-3px;bottom:-3px;left: {{ v.nowLeft }};width:2px;background:#EFF2F7;border-radius:2px"></div>
+                  </sc-if>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:600;letter-spacing:.4px;color:#6E7C92;margin-bottom:8px">
+                  <span>5a</span><span>12p</span><span>6p</span><span>12a</span>
+                </div>
+                <sc-for list="{{ v.lines }}" as="ln" hint-placeholder-count="2">
+                  <div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:2px 0">
+                    <span style="color:#AEB7C9;font-weight:500">{{ ln.label }}</span>
+                    <span style="color:#EFF2F7;font-weight:600;white-space:nowrap">{{ ln.disp }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="font-size:11px;color:#7E8BA0;text-align:center;margin-top:2px;line-height:1.5">Bar shows today's window (5 AM–midnight); the line marks now. Hours set by the resort — confirm on property.</div>
+    </div>
+
+    <!-- cabana details -->
+    <div ref="{{ cabanaRef }}" style="padding:30px 20px 8px">
+      <div style="font-size:20px;font-weight:600;color:#EFF2F7;margin-bottom:4px">Cabana details</div>
+      <div style="font-size:13px;color:#AEB7C9">Our home base by the water</div>
+    </div>
+    <div style="padding:0 16px">
+      <div style="background:#0C2E4F;border:1px solid rgba(174,183,201,.16);border-radius:18px;overflow:hidden">
+        <div style="padding:18px 18px 16px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="flex:1">
+              <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#C77E97">Canyon Creek Day Suites</div>
+              <div style="font-size:26px;font-weight:600;letter-spacing:-.6px;color:#EFF2F7;margin-top:3px;line-height:1.1">Cabana #1300</div>
+            </div>
+            <div style="flex-shrink:0;text-align:right;background:#7E3252;color:#fff;border-radius:12px;padding:9px 13px">
+              <div style="font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.55);text-transform:uppercase">Reserved</div>
+              <div style="font-size:15px;font-weight:600;margin-top:1px;white-space:nowrap">10a – 6p</div>
+            </div>
+          </div>
+          <div style="font-size:14px;color:#C3CAD6;line-height:1.55;margin-top:12px">We've reserved the <strong style="font-weight:600;color:#EFF2F7">Canyon Creek Day Suite Cabana #1300</strong> from <strong style="font-weight:600;color:#EFF2F7">10:00 AM to 6:00 PM</strong>. It sits right along the lazy river by the Canyon Creek Day Suites — our shaded basecamp for drinks, snacks and regroups between activities.</div>
+        </div>
+        <div style="position:relative;border-top:1px solid rgba(174,183,201,.14)">
+          <img src="assets/cabana-map.png" alt="Resort map showing Cabana #1300 by Canyon Creek Day Suites" style="display:block;width:100%;height:auto">
+          <div style="position:absolute;left:12px;bottom:12px;background:rgba(10,10,10,.82);color:#fff;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px;backdrop-filter:blur(4px)">📍 On the property map</div>
+        </div>
+        <div style="position:relative">
+          <img src="assets/cabana-aerial.png" alt="Aerial photo of the lazy river cabanas with #1300 circled" style="display:block;width:100%;height:auto">
+          <div style="position:absolute;left:12px;bottom:12px;background:rgba(10,10,10,.82);color:#fff;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px;backdrop-filter:blur(4px)">🔴 Ours is the circled one</div>
+        </div>
+        <div style="padding:13px 16px;font-size:12px;color:#AEB7C9;line-height:1.5">Look for the <strong style="font-weight: 600; color: #EFF2F7;">1300</strong> marker along the lazy river, just past cabanas 1400 and 1500</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Menu overlay -->
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:50;display:flex;justify-content:center">
+      <div onClick="{{ closeMenu }}" style="position:absolute;inset:0;background:rgba(3,10,20,.55);animation:menuIn .18s ease"></div>
+      <div style="position:relative;width:100%;max-width:460px;background:#071F38;animation:sheetIn .22s ease;display:flex;flex-direction:column;min-height:100vh">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 18px 8px">
+          <div style="font-size:13px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:#AEB7C9">Belczak · O'Hara · Hillman</div>
+          <button onClick="{{ closeMenu }}" aria-label="Close" style="width:42px;height:42px;border-radius:50%;border:none;background:rgba(239,242,247,.1);cursor:pointer;display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EFF2F7" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </div>
+        <div style="padding:14px 22px 0">
+          <div style="font-size:44px;font-weight:500;letter-spacing:-1.8px;color:#EFF2F7;line-height:1.05">Desert Ridge<br>staycation</div>
+          <div style="font-size:14px;color:#AEB7C9;margin-top:10px">July 2–5, 2026 · 3 families</div>
+        </div>
+        <nav style="margin-top:26px;display:flex;flex-direction:column">
+          <sc-for list="{{ menuLinks }}" as="m" hint-placeholder-count="5">
+            <a href="{{ m.href }}" style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;text-decoration:none;border-top:1px solid rgba(174,183,201,.16);color: {{ m.color }};">
+              <span style="font-size:22px;font-weight:600;letter-spacing:-.4px">{{ m.label }}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg>
+            </a>
+          </sc-for>
+        </nav>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 460, &quot;height&quot;: 920 },
+  &quot;menuOrder&quot;: {
+    &quot;editor&quot;: &quot;enum&quot;,
+    &quot;options&quot;: [&quot;Itinerary first&quot;, &quot;Default&quot;],
+    &quot;default&quot;: &quot;Itinerary first&quot;,
+    &quot;tsType&quot;: &quot;string&quot;
+  },
+  &quot;liveStatus&quot;: {
+    &quot;editor&quot;: &quot;boolean&quot;,
+    &quot;default&quot;: true,
+    &quot;tsType&quot;: &quot;boolean&quot;
+  }
+}">
+class Component extends DCLogic {
+  state = { menuOpen: false, view: 'ours' };
+
+  mapVpRef = React.createRef();
+  mapImgRef = React.createRef();
+  cabanaRef = React.createRef();
+  tf = { s: 1, x: 0, y: 0 };
+
+  MAPS = {
+    ours: 'assets/home-map.png',
+    dining: 'assets/dining-map.png',
+  };
+
+  applyTf() {
+    const img = this.mapImgRef.current;
+    if (img) img.style.transform = 'translate(' + this.tf.x + 'px,' + this.tf.y + 'px) scale(' + this.tf.s + ')';
+  }
+  clampTf() {
+    const vp = this.mapVpRef.current; if (!vp) return;
+    const w = vp.clientWidth, h = vp.clientHeight;
+    this.tf.s = Math.max(1, Math.min(5, this.tf.s));
+    const minX = w - w * this.tf.s, minY = h - h * this.tf.s;
+    this.tf.x = Math.max(minX, Math.min(0, this.tf.x));
+    this.tf.y = Math.max(minY, Math.min(0, this.tf.y));
+  }
+  zoomAt(factor, lx, ly) {
+    const ix = (lx - this.tf.x) / this.tf.s, iy = (ly - this.tf.y) / this.tf.s;
+    this.tf.s *= factor;
+    this.tf.s = Math.max(1, Math.min(5, this.tf.s));
+    this.tf.x = lx - ix * this.tf.s;
+    this.tf.y = ly - iy * this.tf.s;
+    this.clampTf(); this.applyTf();
+  }
+  resetTf() { this.tf = { s: 1, x: 0, y: 0 }; this.clampTf(); this.applyTf(); }
+
+  componentDidMount() { this.setupMapZoom(); }
+
+  setupMapZoom() {
+    const vp = this.mapVpRef.current; if (!vp) return;
+    let pts = new Map(), pinch = null, pan = null;
+    const local = e => { const r = vp.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    vp.addEventListener('pointerdown', e => {
+      vp.setPointerCapture(e.pointerId);
+      pts.set(e.pointerId, local(e));
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) };
+        pan = null;
+      } else if (pts.size === 1 && this.tf.s > 1) {
+        pan = local(e); vp.style.cursor = 'grabbing';
+      }
+    });
+    vp.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, local(e));
+      if (pts.size === 2 && pinch) {
+        const [a, b] = [...pts.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        if (pinch.d > 0) this.zoomAt(d / pinch.d, mx, my);
+        pinch.d = d;
+      } else if (pts.size === 1 && pan && this.tf.s > 1) {
+        const p = local(e);
+        this.tf.x += p.x - pan.x; this.tf.y += p.y - pan.y;
+        pan = p; this.clampTf(); this.applyTf();
+      }
+    });
+    const up = e => {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      if (pts.size === 0) { pan = null; vp.style.cursor = 'grab'; }
+    };
+    vp.addEventListener('pointerup', up);
+    vp.addEventListener('pointercancel', up);
+    vp.addEventListener('wheel', e => {
+      e.preventDefault();
+      const p = local(e);
+      this.zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, p.x, p.y);
+    }, { passive: false });
+    vp.addEventListener('dblclick', e => {
+      const p = local(e);
+      if (this.tf.s > 1.05) this.resetTf();
+      else this.zoomAt(2.2, p.x, p.y);
+    });
+  }
+
+  switchView(v) {
+    if (this.state.view === v) return;
+    this.resetTf();
+    this.setState({ view: v });
+  }
+  scrollToCabana() {
+    const el = this.cabanaRef.current; if (!el) return;
+    const target = el.getBoundingClientRect().top + window.pageYOffset - 12;
+    const start = window.pageYOffset, dist = target - start, dur = 520, t0 = performance.now();
+    const ease = p => p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    const step = now => {
+      const p = Math.min(1, (now - t0) / dur);
+      window.scrollTo(0, start + dist * ease(p));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  renderVals() {
+    const { menuOpen, view } = this.state;
+
+    const toggleDefs = [
+      { id: 'ours', label: 'Our spots' },
+      { id: 'dining', label: 'Dining' },
+      { id: 'cabana', label: 'Cabana' },
+    ];
+    const toggles = toggleDefs.map(t => {
+      const active = t.id !== 'cabana' && view === t.id;
+      return {
+        label: t.label,
+        onClick: t.id === 'cabana' ? () => this.scrollToCabana() : () => this.switchView(t.id),
+        bg: active ? '#EFF2F7' : '#0C2E4F',
+        fg: active ? '#092D4E' : '#C3CAD6',
+        border: active ? 'none' : '1px solid rgba(174,183,201,.22)',
+      };
+    });
+    const mapSrc = this.MAPS[view] || this.MAPS.ours;
+
+    const hours = this.buildHours();
+
+    const PAGES = {
+      home: { label: 'Home', href: 'Home.dc.html' },
+      activities: { label: 'All Daily Activities', href: 'All%20Daily%20Activities.dc.html' },
+      maps: { label: 'Resort Maps & Info', href: 'Resort%20Maps.dc.html' },
+      links: { label: 'Links', href: 'Links.dc.html' },
+    };
+    const ORDERS = {
+      'Itinerary first': ['home', 'activities', 'maps', 'links'],
+      'Default': ['home', 'maps', 'activities', 'links'],
+    };
+    const order = ORDERS[this.props.menuOrder] || ORDERS['Itinerary first'];
+    const menuLinks = order.map(id => ({
+      label: PAGES[id].label,
+      href: PAGES[id].href,
+      color: id === 'maps' ? '#62718A' : '#EFF2F7',
+    }));
+
+    return {
+      menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      toggles, mapSrc, hours, menuLinks,
+      mapVpRef: this.mapVpRef, mapImgRef: this.mapImgRef, cabanaRef: this.cabanaRef,
+      zoomIn: () => { const vp = this.mapVpRef.current; this.zoomAt(1.4, vp.clientWidth / 2, vp.clientHeight / 2); },
+      zoomOut: () => { const vp = this.mapVpRef.current; this.zoomAt(1 / 1.4, vp.clientWidth / 2, vp.clientHeight / 2); },
+      resetZoom: () => this.resetTf(),
+      todayLabel: this.dayName(new Date().getDay()),
+    };
+  }
+
+  // ----- Hours of operation -----
+  // days: 0=Sun … 6=Sat. o/c = minutes from midnight (1440 = midnight close).
+  HOURS = [
+    { title: 'Breakfast', color: '#135378', fg: '#ffffff', icon: '🍳', venues: [
+      { name: 'Tía Carmen', sub: 'Mercado breakfast experience', sched: [
+        { label: 'Mon–Fri', days: [1,2,3,4,5], o: 390, c: 660 },
+        { label: 'Sat–Sun', days: [0,6], o: 390, c: 780 },
+      ]},
+    ]},
+    { title: 'Lunch by the pool', color: '#1A739D', fg: '#ffffff', icon: '🏊', venues: [
+      { name: 'Just A Splash & Canyon Creek Bar', sub: 'Food menu', sched: [
+        { label: 'Daily', days: [0,1,2,3,4,5,6], o: 600, c: 1080 },
+      ]},
+      { name: 'Havasu Bar & Bites', sched: [
+        { label: 'Fri–Sat', days: [5,6], o: 720, c: 1260 },
+        { label: 'Sun', days: [0], o: 720, c: 1080 },
+      ]},
+      { name: 'Havasu Taqueria', sched: [
+        { label: 'Sat–Sun', days: [6,0], o: 660, c: 960 },
+      ]},
+    ]},
+    { title: 'Drinkies', color: '#7E3252', fg: '#ffffff', icon: '🍹', venues: [
+      { name: 'Starbucks', sched: [
+        { label: 'Daily', days: [0,1,2,3,4,5,6], o: 300, c: 1020 },
+      ]},
+      { name: 'Twenty6', sched: [
+        { label: 'Friday', days: [5], o: 960, c: 1440 },
+        { label: 'Sat–Sun', days: [6,0], o: 660, c: 1440 },
+      ]},
+      { name: 'Meritage Tavern', sub: 'Happy hour', sched: [
+        { label: 'Thu–Fri', days: [4,5], o: 900, c: 1020 },
+      ]},
+      { name: 'Kembara', sub: 'Happy hour', sched: [
+        { label: 'Tue–Sat', days: [2,3,4,5,6], o: 960, c: 1080 },
+      ]},
+      { name: 'Tía Carmen', sub: 'Happy hour', sched: [
+        { label: 'Daily', days: [0,1,2,3,4,5,6], o: 960, c: 1080 },
+      ]},
+    ]},
+    { title: 'Fun & Games', color: '#83789D', fg: '#ffffff', icon: '🎲', venues: [
+      { name: 'Games in Copper Alley', sched: [
+        { label: 'Fri–Sat', days: [5,6], o: 480, c: 1320 },
+        { label: 'Sun–Thu', days: [0,1,2,3,4], o: 480, c: 1260 },
+      ]},
+      { name: 'Wildfire Golf Club', sched: [
+        { label: 'Daily', days: [0,1,2,3,4,5,6], o: 345, c: 1020 },
+      ]},
+      { name: 'Waterpark', sched: [
+        { label: 'Daily', days: [0,1,2,3,4,5,6], o: 540, c: 1320 },
+      ]},
+    ]},
+  ];
+
+  BAR_START = 300;   // 5:00 AM
+  BAR_END = 1440;    // midnight
+
+  fmtTime(m) {
+    if (m >= 1440) return '12:00a';
+    let h = Math.floor(m / 60), mm = m % 60;
+    const ap = h < 12 ? 'a' : 'p';
+    let hh = h % 12; if (hh === 0) hh = 12;
+    return hh + ':' + String(mm).padStart(2, '0') + ap;
+  }
+  dayName(d) { return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d]; }
+
+  pct(m) {
+    const span = this.BAR_END - this.BAR_START;
+    const v = Math.max(0, Math.min(1, (m - this.BAR_START) / span));
+    return (v * 100).toFixed(1) + '%';
+  }
+
+  buildHours() {
+    const now = new Date();
+    const today = now.getDay();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const live = this.props.liveStatus !== false;
+
+    return this.HOURS.map(g => ({
+      title: g.title, color: g.color, fg: g.fg, icon: g.icon,
+      venues: g.venues.map(v => {
+        const todayEntry = v.sched.find(s => s.days.includes(today));
+        const open = !!todayEntry && nowMin >= todayEntry.o && nowMin < todayEntry.c;
+
+        let status, statusBg, statusFg;
+        if (!live) {
+          status = todayEntry ? this.fmtTime(todayEntry.o) + '–' + this.fmtTime(todayEntry.c) : 'Closed today';
+          statusBg = 'rgba(255,255,255,.1)'; statusFg = '#AEB7C9';
+        } else if (open) {
+          status = 'Open now'; statusBg = '#EFF2F7'; statusFg = '#092D4E';
+        } else if (todayEntry && nowMin < todayEntry.o) {
+          status = 'Opens ' + this.fmtTime(todayEntry.o); statusBg = 'rgba(255,255,255,.1)'; statusFg = '#AEB7C9';
+        } else {
+          status = 'Closed'; statusBg = 'rgba(255,255,255,.1)'; statusFg = '#8693A8';
+        }
+
+        return {
+          name: v.name, sub: v.sub || null,
+          status, statusBg, statusFg,
+          hasToday: !!todayEntry,
+          barLeft: todayEntry ? this.pct(todayEntry.o) : '0%',
+          barWidth: todayEntry ? (parseFloat(this.pct(todayEntry.c)) - parseFloat(this.pct(todayEntry.o))).toFixed(1) + '%' : '0%',
+          nowShown: nowMin >= this.BAR_START && nowMin <= this.BAR_END,
+          nowLeft: this.pct(nowMin),
+          lines: v.sched.map(s => ({ label: s.label, disp: this.fmtTime(s.o) + ' – ' + this.fmtTime(s.c) })),
+        };
+      }),
+    }));
+  }
+}
+</script>
+</body>
+</html>
