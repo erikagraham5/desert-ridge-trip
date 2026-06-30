@@ -16,8 +16,9 @@
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;background:#06192E}
+  .app-bg{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:460px;max-width:100%;background:url('assets/fireworks-bg.svg') center top / cover no-repeat;z-index:-1;pointer-events:none}
   body{font-family:Inter,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
-  .app{max-width:460px;margin:0 auto;min-height:100vh;background:url('assets/fireworks-bg.svg') center top / cover fixed no-repeat;background-color:#06192E;position:relative;box-shadow:0 0 60px rgba(0,0,0,.5)}
+  .app{max-width:460px;margin:0 auto;min-height:100vh;background:transparent;position:relative;box-shadow:0 0 60px rgba(0,0,0,.5)}
   .scroll{padding-bottom:40px}
   ::-webkit-scrollbar{width:0}
   @keyframes menuIn{from{opacity:0}to{opacity:1}}
@@ -26,6 +27,7 @@
 </helmet>
 
 <div class="app">
+  <div class="app-bg"></div>
 
   <!-- ===== App bar ===== -->
   <div style="position:sticky;top:0;z-index:30;background:rgba(7,24,44,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px">
@@ -64,11 +66,11 @@
     <div style="margin:4px 16px 0;background:linear-gradient(140deg,#1A6494 0%,#11436B 55%,#0C3257 100%);border-radius:22px;padding:18px;color:#fff;box-shadow:0 8px 28px rgba(0,0,0,.32)">
       <div style="display:flex;align-items:flex-start;justify-content:space-between">
         <div>
-          <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6)">Desert Ridge now</div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6)">{{ wxEyebrow }}</div>
           <sc-if value="{{ wxReady }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex;align-items:flex-end;gap:9px;margin-top:5px">
               <span style="font-size:50px;font-weight:500;letter-spacing:-2px;line-height:.95">{{ wxTemp }}°</span>
-              <span style="font-size:13px;color:rgba(255,255,255,.72);padding-bottom:9px">{{ wxLabel }} · H{{ wxHi }} L{{ wxLo }}</span>
+              <span style="font-size:13px;color:rgba(255,255,255,.72);padding-bottom:9px">{{ wxSub }}</span>
             </div>
           </sc-if>
           <sc-if value="{{ wxLoading }}" hint-placeholder-val="{{ true }}">
@@ -135,7 +137,7 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
             </sc-if>
             <sc-if value="{{ ev.book }}" hint-placeholder-val="{{ false }}">
-              <a href="https://desertridge.ipoolside.com/services/hidden-do-not-activate/book_activities" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;margin-top:9px;color: {{ ev.fg }};text-decoration:none;background: {{ ev.badgeBg }};padding:6px 11px;border-radius:999px">
+              <a href="{{ ev.bookUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;margin-top:9px;color: {{ ev.fg }};text-decoration:none;background: {{ ev.badgeBg }};padding:6px 11px;border-radius:999px">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>Reserve ahead — book</a>
             </sc-if>
           </div>
@@ -211,16 +213,16 @@ class Component extends DCLogic {
   DATA = [
     { dow: 'Thursday', short: 'Thu', day: 'Jul 2', long: 'July 2', date: '2026-07-02', events: [
       { time: 'By 2 PM',  title: 'Check in', loc: 'Front Desk · Lobby', key: 'lobby', accent: 'cream' },
-      { time: '1:00 PM',  title: 'Duck races', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '1:00 PM',  title: 'Duck races', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: 'https://desertridge.ipoolside.com/?servicename=Duck+Races' },
       { time: '4:00 PM',  title: 'Battle Putt', loc: 'Family Escape Lawn', key: 'familyEscape', accent: 'lav', optional: true },
       { time: '6:00 PM',  title: 'Dinner at Tía Carmen', loc: 'Tía Carmen · reservation', key: 'tiaCarmen', accent: 'coral', menu: 'https://www.tiacarmendesertridge.com/our-menus' },
     ]},
     { dow: 'Friday', short: 'Fri', day: 'Jul 3', long: 'July 3', date: '2026-07-03', events: [
       { time: '9:00 AM',  title: 'Koi & turtle feeding', loc: 'Copper Alley', key: 'copperAlley', accent: 'cream', optional: true },
-      { time: '10:00 AM', title: 'Build-a-buddy', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '10:00 AM', title: 'Build-a-buddy', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: 'https://desertridge.ipoolside.com/?servicename=The_Bear_Factory' },
       { time: '10–4',     title: 'Pool hang', loc: 'Location TBD, Roy will reserve chairs in the AM', key: 'pool', accent: 'peach' },
       { time: '1:00 PM',  title: 'Hair tinsel', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true },
-      { time: '3:00 PM',  title: 'Water balloon toss', loc: 'Family Escape Lawn', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '3:00 PM',  title: 'Water balloon toss', loc: 'Family Escape Lawn', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reserve ahead', book: 'https://desertridge.ipoolside.com/?servicename=Water+Balloon+Toss' },
       { time: '6:00 PM',  title: 'Dinner at Kembara', loc: 'Kembara · reservation', key: 'kembara', accent: 'pink', menu: 'https://www.kembaradesertridge.com/our-menus' },
       { time: '8:00 PM',  title: 'Funergy dance party + stilt walkers', loc: 'Sage Court', key: 'sageCourt', accent: 'cream', optional: true, note: 'Until bedtime' },
       { time: '9:00 PM',  title: 'Fireworks', loc: 'Golf / Ballroom Lawn', key: 'ballroomLawn', accent: 'lav' },
@@ -229,8 +231,8 @@ class Component extends DCLogic {
       { time: '9:00 AM',  title: 'Koi & turtle feeding', loc: 'Copper Alley', key: 'copperAlley', accent: 'cream', optional: true },
       { time: '10–6',     title: 'Cabana hang', loc: 'Our Cabana #1300', key: 'pool', accent: 'peach' },
       { time: '1:00 PM',  title: 'Duck races', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true },
-      { time: '2:00 PM',  title: 'Tie dye', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reservation required', book: true },
-      { time: '4:00 PM',  title: 'Bubble bash', loc: 'Sage Court', key: 'sageCourt', accent: 'cream', optional: true, note: 'Reserve ahead', book: true },
+      { time: '2:00 PM',  title: 'Tie dye', loc: 'Family Escape', key: 'familyEscape', accent: 'cream', optional: true, note: 'Reservation required', book: 'https://desertridge.ipoolside.com/?servicename=tie_die_shirt' },
+      { time: '4:00 PM',  title: 'Bubble bash', loc: 'Sage Court', key: 'sageCourt', accent: 'cream', optional: true, note: 'Reserve ahead', book: 'https://desertridge.ipoolside.com/?servicename=Bubble+Bash%21' },
       { time: '6:00 PM',  title: 'Eat by pool or order in', loc: 'Our Cabana #1300', key: 'pool', accent: 'peach' },
     ]},
     { dow: 'Sunday', short: 'Sun', day: 'Jul 5', long: 'July 5', date: '2026-07-05', events: [
@@ -348,31 +350,57 @@ class Component extends DCLogic {
 
   async fetchWeather() {
     try {
-      const url = 'https://api.open-meteo.com/v1/forecast?latitude=33.677&longitude=-111.976&current=temperature_2m,weather_code&hourly=temperature_2m&temperature_unit=fahrenheit&timezone=America%2FPhoenix&forecast_days=2';
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=33.677&longitude=-111.976&current=temperature_2m,weather_code&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FPhoenix&forecast_days=16';
       const r = await fetch(url);
       const j = await r.json();
-      const cur = j.current, H = j.hourly;
-      let idx = H.time.indexOf(cur.time);
-      if (idx < 0) idx = 0;
-      const hours = [];
-      for (let k = 0; k < 14; k++) {
-        const i = idx + k;
-        if (i < H.time.length) {
-          const dt = new Date(H.time[i]);
-          let h = dt.getHours(); const ap = h >= 12 ? 'p' : 'a'; let hh = h % 12; if (hh === 0) hh = 12;
-          hours.push({ label: hh + ap, temp: Math.round(H.temperature_2m[i]) });
-        }
+      const cur = j.current, H = j.hourly, D = j.daily;
+      const daily = {};
+      for (let i = 0; i < D.time.length; i++) {
+        const m = this.wxMeta(D.weather_code[i]);
+        daily[D.time[i]] = { hi: Math.round(D.temperature_2m_max[i]), lo: Math.round(D.temperature_2m_min[i]), label: m.label, kind: m.kind };
       }
-      let hi = -99, lo = 199;
-      for (let i = 0; i < 24 && i < H.temperature_2m.length; i++) { hi = Math.max(hi, H.temperature_2m[i]); lo = Math.min(lo, H.temperature_2m[i]); }
-      const meta = this.wxMeta(cur.weather_code);
-      this.setState({ wx: { temp: Math.round(cur.temperature_2m), label: meta.label, kind: meta.kind, hi: Math.round(hi), lo: Math.round(lo), hours } });
+      const hourly = [];
+      for (let i = 0; i < H.time.length; i++) hourly.push({ iso: H.time[i], temp: Math.round(H.temperature_2m[i]) });
+      const cm = this.wxMeta(cur.weather_code);
+      this.setState({ wx: { current: { temp: Math.round(cur.temperature_2m), label: cm.label, kind: cm.kind, time: cur.time }, daily, hourly } });
     } catch (e) { this.setState({ wxErr: true }); }
+  }
+
+  hourLabel(h) {
+    const hr = parseInt(h.iso.slice(11, 13), 10);
+    const ap = hr >= 12 ? 'p' : 'a'; let hh = hr % 12; if (hh === 0) hh = 12;
+    return { label: hh + ap, temp: h.temp };
+  }
+
+  buildDayWeather(dObj, isToday) {
+    const wx = this.state.wx;
+    if (!wx) return null;
+    const dateStr = dObj.date;
+    const d = wx.daily[dateStr];
+    const hours = [];
+    if (isToday) {
+      let idx = wx.hourly.findIndex(h => h.iso.slice(0, 13) === wx.current.time.slice(0, 13));
+      if (idx < 0) idx = 0;
+      for (let k = 0; k < 14 && idx + k < wx.hourly.length; k++) hours.push(this.hourLabel(wx.hourly[idx + k]));
+      const hi = d ? d.hi : wx.current.temp, lo = d ? d.lo : wx.current.temp;
+      return { big: wx.current.temp, sub: wx.current.label + ' · H' + hi + ' L' + lo, kind: wx.current.kind, hours };
+    }
+    for (const h of wx.hourly) {
+      if (h.iso.slice(0, 10) === dateStr) {
+        const hr = parseInt(h.iso.slice(11, 13), 10);
+        if (hr >= 6 && hr <= 22) hours.push(this.hourLabel(h));
+      }
+    }
+    if (!d) return { big: wx.current.temp, sub: 'Forecast available soon', kind: wx.current.kind, hours };
+    return { big: d.hi, sub: d.label + ' · Low ' + d.lo + '°', kind: d.kind, hours };
   }
 
   renderVals() {
     const { selDay, menuOpen, wx, wxErr, phase, daysUntil, todayIdx } = this.state;
     const dObj = this.DATA[selDay] || this.DATA[0];
+    const isToday = todayIdx === selDay;
+    const wxDay = this.buildDayWeather(dObj, isToday);
+    const wxEyebrow = isToday ? 'Desert Ridge · now' : 'Desert Ridge · ' + dObj.dow;
 
     const pills = this.DATA.map((d, i) => ({
       dow: d.short, day: d.day, idx: i,
@@ -385,6 +413,7 @@ class Component extends DCLogic {
       const a = this.ACCENTS[e.accent] || this.ACCENTS.cream;
       return { time: e.time, title: e.title, loc: e.loc, optional: !!e.optional, offResort: !!e.offResort,
         note: e.note || null, menu: e.menu || null, book: !!e.book,
+        bookUrl: (typeof e.book === 'string' ? e.book : 'https://desertridge.ipoolside.com/services/hidden-do-not-activate/book_activities'),
         bg: a.bg, border: a.border, fg: a.fg, sub: a.sub, badgeBg: a.badgeBg, badgeFg: a.badgeFg };
     });
 
@@ -432,13 +461,15 @@ class Component extends DCLogic {
       zoomOut: () => { const vp = this.mapVpRef.current; this.zoomAt(1 / 1.4, vp.clientWidth / 2, vp.clientHeight / 2); },
       resetZoom: () => { this.tf = { s: 1, x: 0, y: 0 }; this.clampTf(); this.applyTf(); },
       menuLinks,
-      // weather
-      wxReady: !!wx, wxLoading: !wx && !wxErr, wxErr,
-      wxTemp: wx ? wx.temp : 0, wxLabel: wx ? wx.label : '', wxHi: wx ? wx.hi : 0, wxLo: wx ? wx.lo : 0,
-      wxHours: wx ? wx.hours : [],
-      wxIsSun: wx ? wx.kind === 'sun' : false,
-      wxIsCloud: wx ? wx.kind === 'cloud' : false,
-      wxIsRain: wx ? wx.kind === 'rain' : false,
+      // weather (tied to the selected day)
+      wxReady: !!wxDay, wxLoading: !wx && !wxErr, wxErr,
+      wxEyebrow,
+      wxTemp: wxDay ? wxDay.big : 0,
+      wxSub: wxDay ? wxDay.sub : '',
+      wxHours: wxDay ? wxDay.hours : [],
+      wxIsSun: wxDay ? wxDay.kind === 'sun' : false,
+      wxIsCloud: wxDay ? wxDay.kind === 'cloud' : false,
+      wxIsRain: wxDay ? wxDay.kind === 'rain' : false,
     };
   }
 }
